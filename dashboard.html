@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard • BlankMarket</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/main.js"></script>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="main-header">
+        <button id="menu-btn">☰</button>
+        <div class="logo">BlankMarket</div>
+        <a href="checkout.html" class="login-icon">🛒</a>
+    </header>
+
+    <!-- NAVIGATION DRAWER -->
+    <nav id="nav-drawer">
+        <ul>
+            <li>
+                <button class="accordion">Overview ▾</button>
+                <ul class="submenu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="orders.html">Orders</a></li>
+                    <li><a href="Transaction-history.html">Transaction History</a></li>
+                    <li><a href="profile-setup.html">Profile Settings</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <button class="accordion">Our Products ▾</button>
+                <ul class="submenu">
+                    <li><a href="marketplace.html">Social Media Accounts</a></li>
+                    <li><a href="marketplace.html">Proxies</a></li>
+                    <li><a href="marketplace.html">Texting Numbers</a></li>
+                    <li><a href="marketplace.html">eSIM</a></li>
+                    <li><a href="marketplace.html">Tutorials</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="overlay"></div>
+
+    <div class="content">
+
+        <div class="welcome">
+            <h1 id="welcome-name">Welcome back</h1>
+            <p>Here's what's happening with your account</p>
+        </div>
+
+        <!-- Balance -->
+        <div class="card balance-card">
+            <div class="balance-header">
+                <div class="balance-label">Account Balance</div>
+                
+                <!-- Currency Selector -->
+                <div class="currency-selector" onclick="toggleCurrencyDropdown(event)">
+                    <span id="currency-flag">🇳🇬</span>
+                    <span id="currency-code">NGN</span>
+                    <span style="font-size: 10px; margin-left: 4px;">▼</span>
+                </div>
+            </div>
+
+            <div class="balance-amount" id="balance-amount">₦0.00</div>
+
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                <button class="add-funds" onclick="showAddFundsModal()" style="flex: 1;">+ Add Funds</button>
+            </div>
+
+            <!-- Currency Dropdown -->
+            <div id="currency-dropdown" class="currency-dropdown" style="display: none;">
+                <div class="currency-option" onclick="changeCurrency('NGN')">
+                    <span>🇳🇬</span> <span>NGN - Nigerian Naira</span>
+                </div>
+                <div class="currency-option" onclick="changeCurrency('USD')">
+                    <span>🇺🇸</span> <span>USD - US Dollar</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Orders -->
+        <div class="card stat-card">
+            <div>
+                <div class="stat-label">Total Orders</div>
+                <div class="stat-value" id="total-orders">0</div>
+            </div>
+            <div style="font-size:13px; color:#22c55e;">↑ Recent activity</div>
+        </div>
+
+        <!-- Total Deposit -->
+        <div class="card stat-card">
+            <div>
+                <div class="stat-label">Total Deposits</div>
+                <div class="stat-value" id="total-deposits">₦0</div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="card">
+            <div class="tx-header">Recent Transactions</div>
+            <div id="recent-transactions">
+                <!-- Populated dynamically by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="action-buttons">
+            <a class="action-btn btn-orders" href="orders.html">My Orders</a>
+            <a href="marketplace.html" class="action-btn btn-marketplace">Browse Marketplace</a>
+        </div>
+
+        <!-- Logout -->
+        <div class="logout-container">
+            <button onclick="logout()" class="logout-btn">Logout</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Drawer and accordion are now handled centrally by js/main.js
+
+        function logout() {
+            if (confirm("Are you sure you want to logout?")) {
+                BlankMarket.logout();
+            }
+        }
+
+        function addFunds() {
+            const amount = prompt("Enter amount to add (NGN):", "50000");
+            if (!amount) return;
+            
+            const numAmount = parseInt(amount);
+            if (isNaN(numAmount) || numAmount <= 0) {
+                BlankMarket.showToast("Invalid amount", "error");
+                return;
+            }
+
+            const current = BlankMarket.getBalance();
+            BlankMarket.setBalance(current + numAmount);
+            BlankMarket.addDeposit(numAmount);
+
+            BlankMarket.showToast(`₦${numAmount.toLocaleString()} added successfully!`);
+            
+            // Refresh all stats
+            loadDashboardData();
+        }
+
+        // Load dynamic data when page loads
+        function loadDashboardData() {
+            const user = BlankMarket.getCurrentUser();
+            if (user) {
+                const welcomeEl = document.getElementById('welcome-name');
+                if (welcomeEl) {
+                    welcomeEl.textContent = `Welcome back, ${user.name}`;
+                }
+            }
+
+            // Load balance
+            const balanceEl = document.getElementById('balance-amount');
+            if (balanceEl) {
+                balanceEl.textContent = '₦' + BlankMarket.getBalance().toLocaleString() + '.00';
+            }
+
+            // Load dynamic stats
+            const orders = BlankMarket.getOrders();
+            const totalOrdersEl = document.getElementById('total-orders');
+            if (totalOrdersEl) totalOrdersEl.textContent = orders.length;
+
+            const totalDepositsEl = document.getElementById('total-deposits');
+            if (totalDepositsEl) {
+                totalDepositsEl.textContent = '₦' + BlankMarket.getTotalDeposits().toLocaleString();
+            }
+
+            // Load recent transactions
+            loadRecentTransactions();
+        }
+
+        function loadRecentTransactions() {
+            const container = document.getElementById('recent-transactions');
+            if (!container) return;
+
+            const orders = BlankMarket.getOrders().slice(0, 3); // Show latest 3
+
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 12px 0; color: var(--text-light); font-size: 14px;">
+                        No transactions yet. Start shopping to see your activity here.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = orders.map(order => {
+                const date = new Date(order.date).toLocaleDateString('en-GB', { 
+                    day: 'numeric', month: 'short' 
+                });
+                return `
+                    <div class="tx-item">
+                        <div>
+                            <div class="tx-type">${order.name}</div>
+                            <div class="tx-meta">#${order.id} • ${date}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="tx-amount">- ₦${order.price.toLocaleString()}</div>
+                            <div class="tx-status" style="background:#166534; color:#4ade80;">${order.status}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!BlankMarket.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            loadDashboardData();
+        });
+
+        // === MULTI-CURRENCY FUNCTIONS ===
+        function updateBalanceDisplay() {
+            const currency = BlankMarket.getSelectedCurrency();
+            const currData = BlankMarket.CURRENCIES[currency];
+            const balance = BlankMarket.getBalanceInCurrency(currency);
+
+            // Update balance text
+            const balanceEl = document.getElementById('balance-amount');
+            if (balanceEl) {
+                balanceEl.textContent = `${currData.symbol}${balance}`;
+            }
+
+            // Update currency selector display
+            const flagEl = document.getElementById('currency-flag');
+            const codeEl = document.getElementById('currency-code');
+            if (flagEl) flagEl.textContent = currData.flag;
+            if (codeEl) codeEl.textContent = currency;
+        }
+
+        function toggleCurrencyDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('currency-dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function changeCurrency(newCurrency) {
+            BlankMarket.setSelectedCurrency(newCurrency);
+            document.getElementById('currency-dropdown').style.display = 'none';
+            updateBalanceDisplay();
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            const dropdown = document.getElementById('currency-dropdown');
+            if (dropdown) dropdown.style.display = 'none';
+        });
+
+        // === PROFESSIONAL ADD FUNDS FLOW ===
+        function showAddFundsModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `position:fixed; inset:0; background:rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:9999;`;
+            modal.innerHTML = `
+                <div style="background:var(--surface); border-radius:16px; padding:24px; width:92%; max-width:400px; border:1px solid var(--border);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h3 style="color:var(--primary); margin:0;">Add Funds</h3>
+                        <span onclick="this.closest('.modal').remove()" style="font-size:24px; cursor:pointer; color:var(--text-light);">&times;</span>
+                    </div>
+
+                    <!-- Step 1: Amount -->
+                    <div id="step-amount">
+                        <div class="form-group">
+                            <label>Amount to Deposit</label>
+                            <input type="number" id="fund-amount" placeholder="0.00" style="width:100%; padding:14px; font-size:18px; border-radius:10px; border:1px solid var(--border); background:var(--surface-alt); color:var(--text);">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <select id="fund-currency" style="width:100%; padding:14px; border-radius:10px; border:1px solid var(--border); background:var(--surface-alt); color:var(--text);">
+                                <option value="NGN">NGN - Nigerian Naira</option>
+                                <option value="USD">USD - United States Dollar</option>
+                            </select>
+                        </div>
+
+                        <button onclick="goToPaymentMethod(this)" class="buy-btn" style="margin-top:16px; width:100%;">
+                            Continue
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Payment Method (hidden initially) -->
+                    <div id="step-payment" style="display:none;">
+                        <div style="margin-bottom:16px;">
+                            <div style="font-weight:600; margin-bottom:8px;">Select Payment Method</div>
+                            <div onclick="selectPaymentMethod('bank', this)" class="payment-method-option" style="padding:14px; border:1px solid var(--border); border-radius:10px; margin-bottom:10px; cursor:pointer;">
+                                <strong>🏦 Bank Transfer</strong><br>
+                                <span style="font-size:13px; color:var(--text-light);">Pay via local bank transfer</span>
+                            </div>
+                            <div onclick="selectPaymentMethod('crypto', this)" class="payment-method-option" style="padding:14px; border:1px solid var(--border); border-radius:10px; cursor:pointer;">
+                                <strong>₿ Crypto (USDT)</strong><br>
+                                <span style="font-size:13px; color:var(--text-light);">Pay with Tether (TRC20 / ERC20)</span>
+                            </div>
+                        </div>
+
+                        <div id="payment-details" style="display:none; margin:16px 0; padding:16px; background:var(--surface-alt); border-radius:10px; font-size:14px;">
+                            <!-- Dynamic content injected by JS -->
+                        </div>
+
+                        <div style="display:flex; gap:12px; margin-top:20px;">
+                            <button onclick="goBackToAmount()" style="flex:1; padding:14px; border-radius:10px; border:1px solid var(--border); background:transparent;">Back</button>
+                            <button id="confirm-payment-btn" onclick="confirmPayment(this)" class="buy-btn" style="flex:1;" disabled>
+                                I've Completed Payment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+        }
+
+        let currentAddFundsData = {};
+
+        function goToPaymentMethod(element) {
+            const modal = element.closest('.modal');
+            const amount = parseFloat(modal.querySelector('#fund-amount').value);
+            const currency = modal.querySelector('#fund-currency').value;
+
+            if (!amount || amount <= 0) {
+                BlankMarket.showToast("Please enter a valid amount", "error");
+                return;
+            }
+
+            currentAddFundsData = { amount, currency };
+
+            // Hide amount step, show payment step
+            modal.querySelector('#step-amount').style.display = 'none';
+            modal.querySelector('#step-payment').style.display = 'block';
+        }
+
+        function selectPaymentMethod(method, element) {
+            // Deselect others
+            document.querySelectorAll('.payment-method-option').forEach(el => el.style.border = '1px solid var(--border)');
+            element.style.border = '2px solid var(--primary)';
+
+            const detailsContainer = document.getElementById('payment-details');
+            const confirmBtn = document.getElementById('confirm-payment-btn');
+
+            currentAddFundsData.paymentMethod = method;
+
+            if (method === 'bank') {
+                detailsContainer.innerHTML = `
+                    <strong>Bank Transfer Details</strong><br><br>
+                    Bank: <strong>GTBank</strong><br>
+                    Account Name: <strong>BlankMarket Limited</strong><br>
+                    Account Number: <strong>0123456789</strong><br>
+                    Narration: <strong>Your registered email</strong><br><br>
+                    <small style="color:var(--text-light);">Funds usually reflect within 10-30 mins after payment confirmation.</small>
+                `;
+            } else if (method === 'crypto') {
+                detailsContainer.innerHTML = `
+                    <strong>Crypto Payment (USDT)</strong><br><br>
+                    Network: <strong>TRC20 (Tron)</strong><br>
+                    Wallet Address:<br>
+                    <code style="background:#111; padding:6px 10px; border-radius:6px; display:block; margin:8px 0; word-break:break-all;">TAbCdeFgHiJkLmNoPqRsTuVwXyZ1234567</code>
+                    <small style="color:var(--text-light);">Send exact amount in USDT. Minimum confirmation: 1 block.</small>
+                `;
+            }
+
+            detailsContainer.style.display = 'block';
+            confirmBtn.disabled = false;
+        }
+
+        function goBackToAmount() {
+            const modal = document.querySelector('.modal');
+            if (!modal) return;
+
+            modal.querySelector('#step-payment').style.display = 'none';
+            modal.querySelector('#step-amount').style.display = 'block';
+
+            // Reset selection
+            document.querySelectorAll('.payment-method-option').forEach(el => el.style.border = '1px solid var(--border)');
+            document.getElementById('payment-details').style.display = 'none';
+            document.getElementById('confirm-payment-btn').disabled = true;
+        }
+
+        function confirmPayment(btn) {
+            const modal = btn.closest('.modal');
+            const { amount, currency, paymentMethod } = currentAddFundsData;
+
+            // Convert to NGN
+            let amountInNGN = amount;
+            if (currency === 'USD') {
+                amountInNGN = amount / 0.000625;
+            }
+
+            // Credit balance
+            const current = BlankMarket.getBalance();
+            BlankMarket.setBalance(current + amountInNGN);
+            BlankMarket.addDeposit(amountInNGN);
+
+            modal.remove();
+
+            const symbol = BlankMarket.CURRENCIES[currency].symbol;
+            BlankMarket.showToast(`Payment received! ${symbol}${amount} added successfully.`);
+
+            // Refresh dashboard
+            setTimeout(() => {
+                loadDashboardData();
+            }, 600);
+        }
+
+        // Initialize currency display on load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const currency = BlankMarket.getSelectedCurrency();
+                const currData = BlankMarket.CURRENCIES[currency];
+                
+                const flagEl = document.getElementById('currency-flag');
+                const codeEl = document.getElementById('currency-code');
+                if (flagEl) flagEl.textContent = currData.flag;
+                if (codeEl) codeEl.textContent = currency;
+
+                updateBalanceDisplay();
+            }, 300);
+        });
+    </script>
+
+</body>
+</html>

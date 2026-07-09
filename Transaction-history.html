@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History • BlankMarket</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <button id="menu-btn">☰</button>
+        <div class="logo">BlankMarket</div>
+        <a href="checkout.html" class="login-icon">🛒</a>
+    </header>
+
+    <nav id="nav-drawer">
+        <ul>
+            <li>
+                <button class="accordion">Overview ▾</button>
+                <ul class="submenu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="orders.html">Orders</a></li>
+                    <li><a href="Transaction-history.html">Transaction History</a></li>
+                    <li><a href="profile-setup.html">Profile Settings</a></li>
+                </ul>
+            </li>
+            <li>
+                <button class="accordion">Our Products ▾</button>
+                <ul class="submenu">
+                    <li><a href="marketplace.html">Social Media</a></li>
+                    <li><a href="marketplace.html">Proxies</a></li>
+                    <li><a href="marketplace.html">Texting Numbers</a></li>
+                    <li><a href="marketplace.html">eSIM</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div id="overlay"></div>
+
+    <div class="content" style="max-width:620px; margin:0 auto; padding-top:30px;">
+        <h1 style="color:var(--primary); margin-bottom:24px;">Transaction History</h1>
+
+        <div class="card">
+            <div class="tx-header">All Transactions</div>
+            <div id="transaction-list">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const navDrawer = document.getElementById('nav-drawer');
+        const overlay = document.getElementById('overlay');
+
+        function toggleDrawer() {
+            navDrawer.classList.toggle('open');
+            overlay.style.display = navDrawer.classList.contains('open') ? 'block' : 'none';
+        }
+
+        menuBtn.addEventListener('click', toggleDrawer);
+        overlay.addEventListener('click', toggleDrawer);
+
+        document.querySelectorAll('.accordion').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const submenu = btn.nextElementSibling;
+                submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+            });
+        });
+    </script>
+
+<script>
+function loadTransactions() {
+    const container = document.getElementById('transaction-list');
+    if (!container) return;
+
+    const orders = BlankMarket.getOrders();
+
+    if (orders.length === 0) {
+        container.innerHTML = `
+            <div style="padding: 20px; text-align: center; color: var(--text-light);">
+                No transactions yet.
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = orders.map(order => {
+        const date = new Date(order.date).toLocaleDateString('en-GB', { 
+            day: 'numeric', month: 'short', year: 'numeric' 
+        });
+        return `
+            <div class="tx-item">
+                <div>
+                    <div class="tx-type">${order.name}</div>
+                    <div class="tx-meta">#${order.id} • ${date}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="tx-amount">- ₦${order.price.toLocaleString()}</div>
+                    <div class="tx-status" style="background:#166534; color:#4ade80;">${order.status}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (!BlankMarket.isLoggedIn()) {
+        window.location.href = 'login.html';
+        return;
+    }
+    loadTransactions();
+});
+</script>
+</body>
+</html>

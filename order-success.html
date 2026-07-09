@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Successful • BlankMarket</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/main.js"></script>
+</head>
+<body>
+
+    <header class="main-header">
+        <button id="menu-btn">☰</button>
+        <div class="logo">BlankMarket</div>
+        <a href="checkout.html" class="login-icon">🛒</a>
+    </header>
+
+    <div style="max-width: 480px; margin: 60px auto 40px; padding: 20px; text-align: center;">
+        <div style="font-size: 72px; margin-bottom: 20px;">🎉</div>
+        
+        <h1 style="color: var(--primary); margin-bottom: 12px;">Order Placed Successfully!</h1>
+        <p style="color: var(--text-light); font-size: 17px; margin-bottom: 32px;">
+            Thank you for your purchase. Your order has been processed and details have been sent to your email.
+        </p>
+
+        <div class="card" style="text-align: left; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 16px; color: var(--primary);">Order Summary</h3>
+            <div id="success-order-details"></div>
+        </div>
+
+        <div class="action-buttons" style="flex-direction: column; gap: 12px;">
+            <a href="orders.html" class="action-btn btn-marketplace" style="width: 100%;">View My Orders</a>
+            <a href="dashboard.html" class="action-btn btn-orders" style="width: 100%;">Go to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!BlankMarket.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Show latest order details
+            const orders = BlankMarket.getOrders();
+            const container = document.getElementById('success-order-details');
+
+            if (orders.length > 0 && container) {
+                const latest = orders[0];
+                const date = new Date(latest.date).toLocaleDateString('en-GB');
+
+                container.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                        <span style="color:var(--text-light);">Order ID</span>
+                        <strong>#${latest.id}</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                        <span style="color:var(--text-light);">Item</span>
+                        <strong>${latest.name}</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                        <span style="color:var(--text-light);">Amount Paid</span>
+                        <strong style="color:var(--primary);">₦${latest.price.toLocaleString()}</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:var(--text-light);">Date</span>
+                        <span>${date}</span>
+                    </div>
+                `;
+            }
+        });
+    </script>
+
+<!-- Ensure navigation works reliably -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof BlankMarket !== 'undefined' && BlankMarket.init) {
+            BlankMarket.init();
+        }
+    });
+</script>
+</body>
+</html>

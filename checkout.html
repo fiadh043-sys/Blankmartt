@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout • BlankMarket</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/main.js"></script>
+</head>
+<body>
+
+    <header class="main-header">
+        <button id="menu-btn">☰</button>
+        <div class="logo">BlankMarket</div>
+        <a href="checkout.html" class="login-icon">🛒</a>
+    </header>
+
+    <nav id="nav-drawer">
+        <ul>
+            <li>
+                <button class="accordion">Overview ▾</button>
+                <ul class="submenu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="orders.html">Orders</a></li>
+                    <li><a href="Transaction-history.html">Transaction History</a></li>
+                    <li><a href="profile-setup.html">Profile Settings</a></li>
+                </ul>
+            </li>
+            <li>
+                <button class="accordion">Our Products ▾</button>
+                <ul class="submenu">
+                    <li><a href="marketplace.html">Social Media</a></li>
+                    <li><a href="marketplace.html">Proxies</a></li>
+                    <li><a href="marketplace.html">Texting Numbers</a></li>
+                    <li><a href="marketplace.html">eSIM</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="overlay"></div>
+
+    <div class="checkout-container">
+        <h1 style="margin-bottom:24px; color:var(--primary);">Checkout</h1>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state">
+            <p style="font-size:17px;">No product selected yet.</p>
+            <a href="marketplace.html" style="color:var(--primary); text-decoration:none; font-weight:600;">← Browse Marketplace</a>
+        </div>
+
+        <!-- Dynamic Order Summary -->
+        <div id="order-summary" class="order-summary" style="display:none;">
+            <h3 style="margin-bottom:16px; color:var(--primary);">Order Summary</h3>
+            <div id="order-items"></div>
+            
+            <div style="margin-top:20px; padding-top:16px; border-top:2px solid #333;">
+                <div class="order-item">
+                    <strong>Total</strong>
+                    <strong id="total-amount" class="total">₦0</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment -->
+        <div id="payment-section" class="order-summary" style="display:none;">
+            <h3 style="margin-bottom:16px; color:var(--primary);">Payment Method</h3>
+            <select id="payment-method" style="width:100%; padding:14px; border-radius:10px; background:var(--surface-alt); color:var(--text); border:1px solid var(--border);">
+                <option>Pay with Bank Transfer</option>
+                <option>Pay with Card (Stripe)</option>
+                <option>Pay with USDT (Crypto)</option>
+                <option>Pay with Paystack</option>
+            </select>
+        </div>
+
+        <button id="pay-btn" onclick="completeCheckout()" class="pay-btn" style="display:none;">
+            Pay Now
+        </button>
+    </div>
+
+    <script>
+        // Drawer script
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('menu-btn');
+            const drawer = document.getElementById('nav-drawer');
+            const overlay = document.getElementById('overlay');
+
+            function toggleDrawer() {
+                drawer.classList.toggle('open');
+                overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none';
+            }
+
+            menuBtn.addEventListener('click', toggleDrawer);
+            overlay.addEventListener('click', toggleDrawer);
+        });
+
+        // Load selected product from URL parameters
+        function loadCheckout() {
+            const params = new URLSearchParams(window.location.search);
+            const name = params.get('name');
+            const price = parseInt(params.get('price')) || 0;
+
+            if (!name || price <= 0) {
+                return;
+            }
+
+            // Hide empty state
+            document.getElementById('empty-state').style.display = 'none';
+
+            // Show order
+            const summary = document.getElementById('order-summary');
+            const payment = document.getElementById('payment-section');
+            const payBtn = document.getElementById('pay-btn');
+
+            summary.style.display = 'block';
+            payment.style.display = 'block';
+            payBtn.style.display = 'block';
+
+            document.getElementById('order-items').innerHTML = `
+                <div class="order-item">
+                    <span>${decodeURIComponent(name)}</span>
+                    <strong style="color:var(--primary);">₦${price.toLocaleString()}</strong>
+                </div>
+            `;
+
+            document.getElementById('total-amount').textContent = `₦${price.toLocaleString()}`;
+            document.getElementById('pay-btn').textContent = `Pay ₦${price.toLocaleString()} Now`;
+        }
+
+        function completeCheckout() {
+            const params = new URLSearchParams(window.location.search);
+            const name = params.get('name');
+            const price = parseInt(params.get('price')) || 0;
+
+            if (!name || price <= 0) {
+                BlankMarket.showToast("No order to process", "error");
+                return;
+            }
+
+            const currentBalance = BlankMarket.getBalance();
+
+            if (currentBalance < price) {
+                // Show inline error instead of overlapping toast
+                const paymentSection = document.getElementById('payment-section');
+                if (paymentSection) {
+                    // Remove any existing error
+                    const existingError = paymentSection.querySelector('.inline-error');
+                    if (existingError) existingError.remove();
+
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'inline-error';
+                    errorDiv.style.cssText = `
+                        margin-top: 12px; 
+                        padding: 12px 16px; 
+                        background: #7f1d1d; 
+                        color: white; 
+                        border-radius: 10px; 
+                        font-size: 14px;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    `;
+                    errorDiv.innerHTML = `⚠️ Insufficient balance. Please add funds from your Dashboard.`;
+                    paymentSection.appendChild(errorDiv);
+                }
+                return;
+            }
+
+            if (confirm(`Confirm payment of ₦${price.toLocaleString()}?`)) {
+                // Deduct balance
+                BlankMarket.setBalance(currentBalance - price);
+
+                // Save order
+                const order = {
+                    id: 'BLK-' + Math.floor(100000 + Math.random() * 900000),
+                    name: decodeURIComponent(name),
+                    price: price,
+                    date: new Date().toISOString(),
+                    status: 'Completed'
+                };
+                BlankMarket.addOrder(order);
+
+                BlankMarket.showToast("Payment successful! Order placed.");
+
+                setTimeout(() => {
+                    window.location.href = "order-success.html";
+                }, 900);
+            }
+        }
+
+        // Load on page open
+        window.onload = loadCheckout;
+    </script>
+</body>
+</html>

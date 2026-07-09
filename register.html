@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register • BlankMarket</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/main.js"></script>
+</head>
+<body class="auth-page">
+
+<div class="auth-container">
+
+    <div class="logo-auth">
+        BlankMarket
+    </div>
+
+    <h1>Create Account</h1>
+
+    <p class="subtitle">
+        Join thousands of users accessing premium digital products.
+    </p>
+
+    <form>
+
+        <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="Enter your full name" required>
+        </div>
+
+        <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="you@example.com" required>
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <div style="position: relative;">
+                <input type="password" id="reg-password" placeholder="Create a strong password" required style="padding-right: 45px;">
+                <span onclick="togglePassword('reg-password', this)" 
+                      style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; color: var(--text-light);">👁️</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Confirm Password</label>
+            <div style="position: relative;">
+                <input type="password" id="reg-confirm-password" placeholder="Confirm your password" required style="padding-right: 45px;">
+                <span onclick="togglePassword('reg-confirm-password', this)" 
+                      style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; color: var(--text-light);">👁️</span>
+            </div>
+        </div>
+
+        <button type="button" class="primary-btn" onclick="handleRegister(event)">
+            Create Account
+        </button>
+
+    </form>
+
+    <div class="divider">
+        <span>or</span>
+    </div>
+
+    <p style="text-align:center; color:var(--text-light); margin-bottom:12px;">
+        Already have an account?
+    </p>
+
+    <a href="login.html" class="secondary-btn">
+        Login Instead
+    </a>
+
+    <a class="back-home" href="index.html">
+        ← Back to Home
+    </a>
+
+</div>
+
+<script>
+function handleRegister(e) {
+    e.preventDefault();
+    
+    const nameInput = document.querySelectorAll('input')[0];
+    const emailInput = document.querySelectorAll('input')[1];
+    const passInput = document.getElementById('reg-password');
+    const confirmPass = document.getElementById('reg-confirm-password');
+
+    if (!nameInput || !emailInput || !passInput || !confirmPass) return;
+
+    if (passInput.value !== confirmPass.value) {
+        BlankMarket.showToast("Passwords do not match!", "error");
+        return;
+    }
+
+    if (!emailInput.value || !passInput.value) {
+        BlankMarket.showToast("Please fill all required fields", "error");
+        return;
+    }
+
+    const userData = {
+        name: nameInput.value.trim(),
+        email: emailInput.value.trim(),
+        loginTime: new Date().toISOString()
+    };
+
+    BlankMarket.login(userData);
+    BlankMarket.showToast("Account created successfully!");
+
+    setTimeout(() => {
+        window.location.href = 'dashboard.html';
+    }, 900);
+}
+
+function togglePassword(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        icon.textContent = '👁️';
+    }
+}
+</script>
+
+</body>
+</html>

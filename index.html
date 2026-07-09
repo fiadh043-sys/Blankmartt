@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlankMarket • Premium Digital Assets</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/main.js"></script>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="main-header">
+        <button id="menu-btn">☰</button>
+        <div class="logo">BlankMarket</div>
+        <a href="login.html" class="login-icon">👤</a>
+    </header>
+
+    <!-- NAVIGATION DRAWER -->
+    <nav id="nav-drawer">
+        <ul>
+            <li>
+                <button class="accordion">Overview ▾</button>
+                <ul class="submenu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="orders.html">Orders</a></li>
+                    <li><a href="Transaction-history.html">Transaction History</a></li>
+                    <li><a href="profile-setup.html">Profile Settings</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <button class="accordion">Our Products ▾</button>
+                <ul class="submenu">
+                    <li><a href="marketplace.html">Social Media Accounts</a></li>
+                    <li><a href="marketplace.html">Proxies</a></li>
+                    <li><a href="marketplace.html">Texting Numbers</a></li>
+                    <li><a href="marketplace.html">eSIM</a></li>
+                    <li><a href="marketplace.html">Tutorials</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="overlay"></div>
+
+    <!-- MAIN -->
+    <main>
+
+        <!-- HERO -->
+        <section class="hero">
+            <h1>Premium Digital Assets</h1>
+            <p>
+                Get the best digital tools to step up your game. Our products
+                give you a head start with reliable, premium-quality digital
+                assets trusted by thousands of customers.
+            </p>
+
+            <!-- SEARCH -->
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="e.g. US Facebook aged account">
+                <button onclick="performSearch()">Search</button>
+            </div>
+        </section>
+
+        <!-- PRODUCTS -->
+        <section class="products">
+            <div class="product-card">
+                <div class="productone">
+                    <img src="icon/proxy.png" alt="Product">
+                </div>
+                <div class="content">
+                    <div class="title-price">
+                        <h4>30 Days Global eSIM<br>for iPhone &amp; Android</h4>
+                        <h4 class="price">₦18,500</h4>
+                    </div>
+                    <p>
+                        High-speed data across 150+ countries. Instant delivery after purchase. 
+                        Make sure your device supports eSIM.
+                    </p>
+                    <div class="bottom">
+                        <span>📦 In Stock: 47</span>
+                        <span>⭐ 4.98</span>
+                    </div>
+                    <a href="login.html" class="buy-btn">Login to Buy</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATS -->
+        <section class="carousel">
+            <p>🏆 62k+ Happy Customers</p>
+            <p>85+ Premium Products</p>
+            <p>0 Unresolved Issues</p>
+            <p>99.8% Success Rate</p>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div>
+                <h3>BlankMarket</h3>
+                <p>Your trusted marketplace for premium digital assets.</p>
+            </div>
+            <div>
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="marketplace.html">Marketplace</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Email Support</a></li>
+                    <li><a href="#">Telegram</a></li>
+                    <li><a href="#">WhatsApp</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="copyright">© 2026 BlankMarket. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Search functionality
+        function performSearch() {
+            const input = document.getElementById('search-input');
+            if (!input) return;
+            
+            const query = input.value.trim();
+            if (query.length > 0) {
+                window.location.href = `sub-products.html?search=${encodeURIComponent(query)}`;
+            } else {
+                window.location.href = 'marketplace.html';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

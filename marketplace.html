@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace • BlankMarket</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="main-header">
+        <button id="menu-btn">☰</button>
+        <div class="logo">BlankMarket</div>
+        <a href="checkout.html" class="login-icon">🛒</a>
+    </header>
+
+    <!-- NAVIGATION DRAWER -->
+    <nav id="nav-drawer">
+        <ul>
+            <li>
+                <button class="accordion">Overview ▾</button>
+                <ul class="submenu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="orders.html">Orders</a></li>
+                    <li><a href="Transaction-history.html">Transaction History</a></li>
+                    <li><a href="profile-setup.html">Profile Settings</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <button class="accordion">Our Products ▾</button>
+                <ul class="submenu">
+                    <li><a href="marketplace.html">Social Media Accounts</a></li>
+                    <li><a href="marketplace.html">Proxies</a></li>
+                    <li><a href="marketplace.html">Texting Numbers</a></li>
+                    <li><a href="marketplace.html">eSIM</a></li>
+                    <li><a href="marketplace.html">Tutorials</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="overlay"></div>
+
+    <main style="padding: 20px; max-width: 1100px; margin: 0 auto;">
+        <h1 style="margin-bottom: 8px; color: var(--primary); font-size: 28px;">Our Products</h1>
+        <p style="color: var(--text-light); margin-bottom: 28px;">Browse premium digital assets by category</p>
+        
+        <div class="category-grid">
+            <a href="sub-products.html?cat=social" class="category-card">
+                <img src="icon/socialmedia.png" alt="social media icon">
+                <h3>Social Media</h3>
+                <p>Aged Accounts • Boosting</p>
+            </a>
+            <a href="sub-products.html?cat=proxy" class="category-card">
+                <img src="icon/proxy.png" alt="proxies icon">
+                <h3>Proxies</h3>
+                <p>ISP &amp; Residential</p>
+            </a>
+            <a href="sub-products.html?cat=texting" class="category-card">
+                <img src="icon/text.png" alt="text icon">
+                <h3>Texting Numbers</h3>
+                <p>SMS &amp; Verification</p>
+            </a>
+            <a href="sub-products.html?cat=esim" class="category-card">
+                <img src="icon/txt.png" alt="signal icon">
+                <h3>eSIM</h3>
+                <p>Global Data Plans</p>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        const menuBtn = document.getElementById("menu-btn");
+        const navDrawer = document.getElementById("nav-drawer");
+        const overlay = document.getElementById("overlay");
+
+        function openDrawer() {
+            navDrawer.classList.add("open");
+            overlay.style.display = "block";
+        }
+
+        function closeDrawer() {
+            navDrawer.classList.remove("open");
+            overlay.style.display = "none";
+        }
+
+        function toggleDrawer() {
+            if (navDrawer.classList.contains("open")) {
+                closeDrawer();
+            } else {
+                openDrawer();
+            }
+        }
+
+        menuBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            toggleDrawer();
+        });
+
+        overlay.addEventListener("click", closeDrawer);
+
+        document.querySelectorAll(".accordion").forEach(button => {
+            button.addEventListener("click", function () {
+                this.classList.toggle("active");
+                const submenu = this.nextElementSibling;
+                submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+            });
+        });
+    </script>
+</body>
+</html>

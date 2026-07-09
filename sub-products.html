@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products • BlankMarket</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <button id="menu-btn">☰</button>
+        <div class="logo">BlankMarket</div>
+        <a href="checkout.html" class="login-icon">🛒</a>
+    </header>
+
+    <nav id="nav-drawer">
+        <ul>
+            <li>
+                <button class="accordion">Overview ▾</button>
+                <ul class="submenu">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="orders.html">Orders</a></li>
+                    <li><a href="Transaction-history.html">Transaction History</a></li>
+                    <li><a href="profile-setup.html">Profile Settings</a></li>
+                </ul>
+            </li>
+            <li>
+                <button class="accordion">Our Products ▾</button>
+                <ul class="submenu">
+                    <li><a href="marketplace.html">Social Media</a></li>
+                    <li><a href="marketplace.html">Proxies</a></li>
+                    <li><a href="marketplace.html">Texting Numbers</a></li>
+                    <li><a href="marketplace.html">eSIM</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div id="overlay"></div>
+
+    <main style="padding:20px; max-width:620px; margin:0 auto;">
+        <h2 id="category-title" style="margin-bottom:24px; color:var(--primary);">Products</h2>
+        
+        <div class="product-list">
+            <!-- Dynamic items based on category, but static examples -->
+            <div class="product-item">
+                <img src="icon/facebook.png" alt="">
+                <div style="flex:1">
+                    <h4>US Facebook Aged Account</h4>
+                    <p style="color:var(--text-light); font-size:14px;">Verified • High Trust Score • 2019+</p>
+                    <strong style="color:var(--primary); font-size:18px;">₦8,500</strong>
+                    <a href="checkout.html?name=US%20Facebook%20Aged%20Account&price=8500" class="buy-btn">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-item">
+                <img src="icon/insta.png" alt="">
+                <div style="flex:1">
+                    <h4>Instagram Business Account</h4>
+                    <p style="color:var(--text-light); font-size:14px;">500+ Followers • Aged • Verified</p>
+                    <strong style="color:var(--primary); font-size:18px;">₦12,000</strong>
+                    <a href="checkout.html?name=Instagram%20Business%20Account&price=12000" class="buy-btn">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="product-item">
+                <img src="icon/prx.png" alt="">
+                <div style="flex:1">
+                    <h4>Premium Residential Proxy</h4>
+                    <p style="color:var(--text-light); font-size:14px;">30 Days • USA Location • Unlimited</p>
+                    <strong style="color:var(--primary); font-size:18px;">₦15,000</strong>
+                    <a href="checkout.html?name=Premium%20Residential%20Proxy&price=15000" class="buy-btn">Buy Now</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Category title + Search from URL
+        const params = new URLSearchParams(window.location.search);
+        const cat = params.get('cat');
+        const searchQuery = params.get('search');
+
+        if (cat) {
+            const title = document.getElementById('category-title');
+            title.textContent = cat.charAt(0).toUpperCase() + cat.slice(1) + " Products";
+        }
+
+        if (searchQuery) {
+            const title = document.getElementById('category-title');
+            title.textContent = `Search results for "${searchQuery}"`;
+            
+            // Simple client-side filter
+            setTimeout(() => {
+                const items = document.querySelectorAll('.product-item');
+                let visibleCount = 0;
+                
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(searchQuery.toLowerCase())) {
+                        item.style.display = '';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    const list = document.querySelector('.product-list');
+                    if (list) {
+                        list.innerHTML = `
+                            <div style="text-align:center; padding:40px 20px; color:var(--text-light);">
+                                No products found matching "<strong>${searchQuery}</strong>".<br>
+                                <a href="marketplace.html" style="color:var(--primary);">Browse all categories</a>
+                            </div>
+                        `;
+                    }
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>

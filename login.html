@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login • BlankMarket</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/main.js"></script>
+</head>
+<body class="auth-page">
+
+<div class="auth-container">
+
+    <div class="logo-auth">
+        BlankMarket
+    </div>
+
+    <h1>Welcome Back</h1>
+
+    <p class="subtitle">
+        Login to access premium digital products and manage your orders.
+    </p>
+
+    <form>
+
+        <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="you@example.com" required>
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <div style="position: relative;">
+                <input type="password" id="login-password" placeholder="Enter your password" required style="padding-right: 45px;">
+                <span onclick="togglePassword('login-password', this)" 
+                      style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; color: var(--text-light);">👁️</span>
+            </div>
+        </div>
+
+        <div class="options">
+            <label>
+                <input type="checkbox"> Remember me
+            </label>
+            <a href="#">Forgot Password?</a>
+        </div>
+
+        <button type="button" class="primary-btn" onclick="handleLogin(event)">
+            Login
+        </button>
+
+    </form>
+
+    <div class="divider">
+        <span>or</span>
+    </div>
+
+    <p style="text-align:center; color:var(--text-light); margin-bottom:12px;">
+        Don't have an account?
+    </p>
+
+    <a href="register.html" class="secondary-btn">
+        Create Account
+    </a>
+
+    <a class="back-home" href="index.html">
+        ← Back to Home
+    </a>
+
+</div>
+
+<script>
+function handleLogin(e) {
+    e.preventDefault();
+    
+    const emailInput = document.querySelector('input[type="email"]');
+    const passwordInput = document.getElementById('login-password');
+    
+    if (!emailInput || !passwordInput) return;
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (!email || !password) {
+        BlankMarket.showToast("Please enter email and password", "error");
+        return;
+    }
+
+    const userData = {
+        name: email.split('@')[0],
+        email: email,
+        loginTime: new Date().toISOString()
+    };
+
+    BlankMarket.login(userData);
+    BlankMarket.showToast("Login successful! Welcome back.");
+
+    setTimeout(() => {
+        window.location.href = 'dashboard.html';
+    }, 800);
+}
+
+function togglePassword(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        icon.textContent = '👁️';
+    }
+}
+</script>
+
+</body>
+</html>
