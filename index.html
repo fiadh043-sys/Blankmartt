@@ -125,38 +125,35 @@
     </footer>
 
     <script>
-        
-    // Make nav dropdowns work
-    document.addEventListener('DOMContentLoaded', function () {
-        console.log('✅ JavaScript loaded successfully on iPhone');
+           document.addEventListener('DOMContentLoaded', function () {
+        console.log('✅ JS loaded on BlankMarket');
 
-        // Find all dropdown toggles
-        const dropdowns = document.querySelectorAll('.dropdown, [class*="drop"], a[href="#"], .nav-item');
-        
-        dropdowns.forEach(item => {
-            item.addEventListener('click', function (e) {
-                console.log('Dropdown clicked:', this.textContent);
-                // Simple toggle example - customize as needed
-                this.classList.toggle('active');
-                const menu = this.nextElementSibling;
-                if (menu) menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        // Hamburger / Nav Menu
+        const hamburger = document.querySelector('.hamburger, .menu-toggle, #menu-toggle, button[aria-label*="menu"], .nav-hamburger, nav button');
+        const navMenu = document.querySelector('nav ul, .nav-menu, .dropdown-menu, #nav-menu');
+
+        if (hamburger) {
+            hamburger.addEventListener('click', function () {
+                console.log('Hamburger clicked!');
+                if (navMenu) {
+                    navMenu.style.display = (navMenu.style.display === 'block' || navMenu.style.display === '') ? 'none' : 'block';
+                } else {
+                    alert('Hamburger clicked - but no menu container found!');
+                }
             });
-        });
+        } else {
+            console.log('⚠️ Hamburger not found with current selector');
+        }
 
-        // Login button
-        const loginButtons = document.querySelectorAll('button, a[href*="login"], [id*="login"], [class*="login"], .btn-login');
-        loginButtons.forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                console.log('✅ Login button clicked!');
+        // Login / Profile
+        const profileBtn = document.querySelector('.profile, .user-icon, .login-btn, button[aria-label*="login"], .fa-user');
+        if (profileBtn) {
+            profileBtn.addEventListener('click', function () {
                 alert('Login button works! (Replace with real login later)');
-                // e.preventDefault(); // Uncomment if it's a link
             });
-        });
-
-        if (loginButtons.length === 0) {
-            console.log('⚠️ No login button found in HTML. Check the element selector.');
         }
     });
+  
         // Search functionality
         function performSearch() {
             const input = document.getElementById('search-input');
