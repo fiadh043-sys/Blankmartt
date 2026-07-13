@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BlankMarket • Premium Digital Assets</title>
     <link rel="stylesheet" href="style.css">
-    <script src="js/main.js"></script>
+    <script src="js/main.js" defer></script>
 </head>
 <body>
 
     <!-- HEADER -->
     <header class="main-header">
-        <button id="menu-btn">☰</button>
+        <button id="menu-btn" aria-label="Toggle menu">☰</button>
         <div class="logo">BlankMarket</div>
-        <a href="login.html" class="login-icon">👤</a>
+        <a href="login.html" class="login-icon" aria-label="Login">👤</a>
     </header>
 
     <!-- NAVIGATION DRAWER -->
-    <nav id="nav-drawer">
+    <nav id="nav-drawer" class="nav-drawer">
         <ul>
             <li>
                 <button class="accordion">Overview ▾</button>
@@ -42,7 +42,7 @@
         </ul>
     </nav>
 
-    <div id="overlay"></div>
+    <div id="overlay" class="overlay"></div>
 
     <!-- MAIN -->
     <main>
@@ -50,11 +50,7 @@
         <!-- HERO -->
         <section class="hero">
             <h1>Premium Digital Assets</h1>
-            <p>
-                Get the best digital tools to step up your game. Our products
-                give you a head start with reliable, premium-quality digital
-                assets trusted by thousands of customers.
-            </p>
+            <p>Get the best digital tools to step up your game. Reliable, premium-quality assets trusted by thousands.</p>
 
             <!-- SEARCH -->
             <div class="search-box">
@@ -67,17 +63,14 @@
         <section class="products">
             <div class="product-card">
                 <div class="productone">
-                    <img src="proxy.png" alt="Product">
+                    <img src="proxy.png" alt="30 Days Global eSIM">
                 </div>
                 <div class="content">
                     <div class="title-price">
-                        <h4>30 Days Global eSIM<br>for iPhone &amp; Android</h4>
+                        <h4>30 Days Global eSIM<br>for iPhone & Android</h4>
                         <h4 class="price">₦18,500</h4>
                     </div>
-                    <p>
-                        High-speed data across 150+ countries. Instant delivery after purchase. 
-                        Make sure your device supports eSIM.
-                    </p>
+                    <p>High-speed data across 150+ countries. Instant delivery.</p>
                     <div class="bottom">
                         <span>📦 In Stock: 47</span>
                         <span>⭐ 4.98</span>
@@ -125,58 +118,58 @@
     </footer>
 
     <script>
-           document.addEventListener('DOMContentLoaded', function () {
-        console.log('✅ JS loaded on BlankMarket');
+        // Wait for DOM
+        document.addEventListener('DOMContentLoaded', function () {
 
-        // Hamburger / Nav Menu
-        const hamburger = document.querySelector('.hamburger, .menu-toggle, #menu-toggle, button[aria-label*="menu"], .nav-hamburger, nav button');
-        const navMenu = document.querySelector('nav ul, .nav-menu, .dropdown-menu, #nav-menu');
+            // Hamburger Menu
+            const menuBtn = document.getElementById('menu-btn');
+            const navDrawer = document.getElementById('nav-drawer');
+            const overlay = document.getElementById('overlay');
 
-        if (hamburger) {
-            hamburger.addEventListener('click', function () {
-                console.log('Hamburger clicked!');
-                if (navMenu) {
-                    navMenu.style.display = (navMenu.style.display === 'block' || navMenu.style.display === '') ? 'none' : 'block';
-                } else {
-                    alert('Hamburger clicked - but no menu container found!');
+            function toggleMenu() {
+                navDrawer.classList.toggle('open');
+                overlay.classList.toggle('active');
+            }
+
+            menuBtn.addEventListener('click', toggleMenu);
+            overlay.addEventListener('click', toggleMenu);
+
+            // Accordion
+            const accordions = document.querySelectorAll('.accordion');
+            accordions.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const submenu = this.nextElementSibling;
+                    submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+                    
+                    // Optional: close other open accordions
+                    accordions.forEach(other => {
+                        if (other !== this) {
+                            other.nextElementSibling.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // Search with Enter key
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
                 }
             });
-        } else {
-            console.log('⚠️ Hamburger not found with current selector');
-        }
+        });
 
-        // Login / Profile
-        const profileBtn = document.querySelector('.profile, .user-icon, .login-btn, button[aria-label*="login"], .fa-user');
-        if (profileBtn) {
-            profileBtn.addEventListener('click', function () {
-                alert('Login button works! (Replace with real login later)');
-            });
-        }
-    });
-  
-        // Search functionality
+        // Search function
         function performSearch() {
             const input = document.getElementById('search-input');
-            if (!input) return;
-            
             const query = input.value.trim();
+            
             if (query.length > 0) {
                 window.location.href = `sub-products.html?search=${encodeURIComponent(query)}`;
             } else {
                 window.location.href = 'marketplace.html';
             }
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('search-input');
-            if (searchInput) {
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        performSearch();
-                    }
-                });
-            }
-        });
     </script>
 </body>
 </html>
