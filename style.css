@@ -1,7 +1,10 @@
 /* ==========================
    RESET
 ========================== */
-
+@media (max-width: 768px) {
+  .dropdown-menu { display: none; }
+  .active + .dropdown-menu { display: block; }
+}
 *{
     margin:0;
     padding:0;
