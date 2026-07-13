@@ -117,59 +117,73 @@
         <p class="copyright">© 2026 BlankMarket. All Rights Reserved.</p>
     </footer>
 
-    <script>
-        // Wait for DOM
-        document.addEventListener('DOMContentLoaded', function () {
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
 
-            // Hamburger Menu
-            const menuBtn = document.getElementById('menu-btn');
-            const navDrawer = document.getElementById('nav-drawer');
-            const overlay = document.getElementById('overlay');
+        const menuBtn = document.getElementById('menu-btn');
+        const navDrawer = document.getElementById('nav-drawer');
+        const overlay = document.getElementById('overlay');
 
-            function toggleMenu() {
-                navDrawer.classList.toggle('open');
-                overlay.classList.toggle('active');
-            }
+        function openMenu() {
+            navDrawer.classList.add('open');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+        }
 
-            menuBtn.addEventListener('click', toggleMenu);
-            overlay.addEventListener('click', toggleMenu);
+        function closeMenu() {
+            navDrawer.classList.remove('open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
 
-            // Accordion
-            const accordions = document.querySelectorAll('.accordion');
-            accordions.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const submenu = this.nextElementSibling;
-                    submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
-                    
-                    // Optional: close other open accordions
-                    accordions.forEach(other => {
-                        if (other !== this) {
-                            other.nextElementSibling.style.display = 'none';
-                        }
-                    });
+        // Hamburger
+        menuBtn.addEventListener('click', openMenu);
+
+        // Close on overlay click
+        overlay.addEventListener('click', closeMenu);
+
+        // Close when clicking any link inside the menu
+        const navLinks = navDrawer.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+
+        // Accordion
+        const accordions = document.querySelectorAll('.accordion');
+        accordions.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const submenu = this.nextElementSibling;
+                const isOpen = submenu.style.display === 'block';
+                
+                // Close all first
+                document.querySelectorAll('.submenu').forEach(sub => {
+                    sub.style.display = 'none';
                 });
-            });
-
-            // Search with Enter key
-            const searchInput = document.getElementById('search-input');
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    performSearch();
+                
+                if (!isOpen) {
+                    submenu.style.display = 'block';
                 }
             });
         });
 
-        // Search function
-        function performSearch() {
-            const input = document.getElementById('search-input');
-            const query = input.value.trim();
-            
-            if (query.length > 0) {
-                window.location.href = `sub-products.html?search=${encodeURIComponent(query)}`;
-            } else {
-                window.location.href = 'marketplace.html';
-            }
+        // Search
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') performSearch();
+            });
         }
-    </script>
+    });
+
+    function performSearch() {
+        const input = document.getElementById('search-input');
+        const query = input.value.trim();
+        if (query) {
+            window.location.href = `sub-products.html?search=${encodeURIComponent(query)}`;
+        } else {
+            window.location.href = 'marketplace.html';
+        }
+    }
+</script>
 </body>
 </html>
